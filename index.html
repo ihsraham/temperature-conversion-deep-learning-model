@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Celsius to Fahrenheit test site</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@2.0.0/dist/tf.min.js"></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
+      crossorigin="anonymous"
+    />
+  </head>
+
+  <body>
+    <div
+      class="container"
+      style="
+        flex: 1;
+        justify-content: center;
+        align-content: center;
+        max-width: 500px;
+        margin-top: 50px;
+      "
+    >
+      <div
+        class="form-control text-center"
+        style="
+          font-weight: bold;
+          background-color: #b452ff;
+          border: 6px solid red;
+        "
+      >
+        <!-- DATA ADD FIELD  -->
+
+        <label class="form-label mt-4">Add Celsius data: </label>
+        <input
+          class="form-control"
+          type="text"
+          id="cdata"
+          value="0.0,-5.0,9.44,-40,-85.56,-29.28,-9.33,38.17,2.46,31.11,-66.11,-79.99,-48.09,24.21"
+        />
+        <label class="form-label mt-4">Add Fahrenheit data: </label>
+        <input
+          class="form-control"
+          type="text"
+          id="fdata"
+          value="32.0,23.0,49.0,-40.0,-122.0,-20.7,15.2,100.7,36.42,87.99,-87.0,-111.98,-54.56,75.57"
+        />
+        <button class="btn btn-primary mt-4" onclick="addData()">ADD</button>
+
+        <div
+          class="mt-4 container text-center form-control"
+          style="background-color: black; border: 6px solid red;"
+        >
+          <h5 class="mt-4" style="color: #ff0303;">Added Data:</h5>
+          <p class="mt-4" style="color: #2dff2d;" id="output1"></p>
+          <p class="mt-4" style="color: #2dff2d;" id="output2"></p>
+        </div>
+
+        <!-- DATA TRAINING FIELD -->
+        <br />
+        <label class="form-label mt-4">Give Celsius Value: </label>
+        <input class="form-control" type="text" id="data" value="-6.67" />
+        <label class="form-label mt-4">Give No of Epochs Value: </label>
+        <input class="form-control" type="text" id="epoc" value="100" />
+        <button class="btn btn-primary mt-4" id="press">SUBMIT</button>
+      </div>
+    </div>
+
+    <div
+      class="mt-4 container text-center form-control"
+      style="background-color: black; border: 6px solid red;"
+    >
+      <h5 class="mt-4" style="color: #ff0303;">OUTPUT:</h5>
+      <p class="mt-4" style="color: #2dff2d;" id="output"></p>
+    </div>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+      crossorigin="anonymous"
+    ></script>
+
+    <script type="text/javascript">
+      var cel_valu = [];
+      var far_valu = [];
+      //const celsius_values = tf.tensor([-30, 45, 32, 4, 8, 29, 90, 12, 29, -40, 9, 30, 22, -12]);
+
+      //const fahrenheit_values = tf.tensor([-22, 113, 89.6, 39.2, 46.4, 84.2, 194, 53.6, 84.2, -40, 48.2, 86, 71.6, 10.4]);
+
+      // var celsius_values = [];
+      // var fahrenheit_values = [];
+      //console.log(fahrenheit_values);
+      // const layer_1 = tf.layers.dense({inputShape: [1], units: 1})
+
+      function addData() {
+        var cel_val = document.getElementById("cdata").value;
+        var far_val = document.getElementById("fdata").value;
+        alert("data submitted" + cel_val + far_val);
+        cel_valu = cel_val.split(",").map(parseFloat);
+        far_valu = far_val.split(",").map(parseFloat);
+
+        // cel_valu.push(parseFloat(cel_val.value));
+        // far_valu.push(parseFloat(far_val.value));
+        console.log(cel_valu);
+        console.log(far_valu);
+        document.getElementById("output1").innerHTML = "Data_1: " + cel_valu;
+        document.getElementById("output2").innerHTML = "Data_2: " + far_valu;
+      }
+
+      document.getElementById("press").addEventListener("click", function () {
+        celsius_values = tf.tensor2d(cel_valu, [14, 1]);
+        console.log(celsius_values);
+        fahrenheit_values = tf.tensor2d(far_valu, [14, 1]);
+        console.log(fahrenheit_values);
+        var datas = document.getElementById("data");
+        var ins = parseFloat(datas.value);
+        var epoc = document.getElementById("epoc");
+        let epocs = parseInt(epoc.value);
+
+        console.log(ins);
+        document.getElementById("output").innerText =
+          "Training Machine Please Wait...";
+        const model = tf.sequential({
+          layers: [
+            tf.layers.dense({ inputShape: [1], units: 1 }),
+            tf.layers.dense({ units: 100, activation: "relu" }),
+            tf.layers.dense({ units: 50, activation: "relu" }),
+            tf.layers.dense({ units: 1 })
+          ]
+        });
+
+        model.summary();
+
+        model.compile({
+          loss: "meanAbsoluteError",
+          optimizer: tf.train.adam(0.1),
+          metrics: ["mae"]
+        });
+
+        model
+          .fit(celsius_values, fahrenheit_values, { epochs: epocs })
+          .then((trained_object) => {
+            const inputTensor = tf.tensor2d([ins], [1, 1]);
+            console.log(inputTensor);
+            const answer = model.predict(inputTensor);
+            console.log(trained_object.history["loss"]);
+            for (let i = 0; i < model.getWeights().length; i++) {
+              console.log(model.getWeights()[i].dataSync());
+            }
+            // console.log(model.getWeights().length);
+            // console.log(trained_object.history["loss"][99]);
+            //console.log(answer.dataSync());
+            let answers = answer.dataSync()[0];
+            console.log(answers);
+            answers = answers.toFixed(2);
+            document.getElementById("output").innerHTML =
+              "Answer: " + answers + "&deg F";
+          });
+
+        // body...
+      });
+    </script>
+  </body>
+</html>

@@ -1,2 +1,1 @@
-# temperature-conversion-deep-learning-model
-Created with CodeSandbox
+# celsius-machine-learning
