@@ -49,6 +49,19 @@
           id="fdata"
           value="32.0,23.0,49.0,-40.0,-122.0,-20.7,15.2,100.7,36.42,87.99,-87.0,-111.98,-54.56,75.57"
         />
+
+        <label class="form-label mt-4">Select Activation: </label>
+        <select
+          class="form-select"
+          id="acti"
+          aria-label="Default select example"
+        >
+          <!-- <option selected>Select Activation</option> -->
+          <option selected value="relu">Relu</option>
+          <option value="tanh">Tanh</option>
+          <option value="sigmoid">Sigmoid</option>
+          <option value="liner">Liner</option>
+        </select>
         <button class="btn btn-primary mt-4" onclick="addData()">ADD</button>
 
         <div
@@ -87,6 +100,7 @@
     <script type="text/javascript">
       var cel_valu = [];
       var far_valu = [];
+      var activation;
       //const celsius_values = tf.tensor([-30, 45, 32, 4, 8, 29, 90, 12, 29, -40, 9, 30, 22, -12]);
 
       //const fahrenheit_values = tf.tensor([-22, 113, 89.6, 39.2, 46.4, 84.2, 194, 53.6, 84.2, -40, 48.2, 86, 71.6, 10.4]);
@@ -97,6 +111,7 @@
       // const layer_1 = tf.layers.dense({inputShape: [1], units: 1})
 
       function addData() {
+        activation = document.getElementById("acti").value;
         var cel_val = document.getElementById("cdata").value;
         var far_val = document.getElementById("fdata").value;
         alert("data submitted" + cel_val + far_val);
@@ -112,9 +127,11 @@
       }
 
       document.getElementById("press").addEventListener("click", function () {
-        celsius_values = tf.tensor2d(cel_valu, [14, 1]);
+        let cel_valu_len = cel_valu.length;
+        let far_valu_len = far_valu.length;
+        celsius_values = tf.tensor2d(cel_valu, [cel_valu_len, 1]);
         console.log(celsius_values);
-        fahrenheit_values = tf.tensor2d(far_valu, [14, 1]);
+        fahrenheit_values = tf.tensor2d(far_valu, [far_valu_len, 1]);
         console.log(fahrenheit_values);
         var datas = document.getElementById("data");
         var ins = parseFloat(datas.value);
@@ -127,8 +144,8 @@
         const model = tf.sequential({
           layers: [
             tf.layers.dense({ inputShape: [1], units: 1 }),
-            tf.layers.dense({ units: 100, activation: "relu" }),
-            tf.layers.dense({ units: 50, activation: "relu" }),
+            tf.layers.dense({ units: 100, activation: activation }),
+            tf.layers.dense({ units: 50, activation: activation }),
             tf.layers.dense({ units: 1 })
           ]
         });
