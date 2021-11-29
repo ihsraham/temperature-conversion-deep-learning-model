@@ -81,7 +81,7 @@
             <label class="form-label mt-4">Select Activation: </label>
             <select
               class="form-select"
-              id="acti"
+              id="default-acti"
               aria-label="Default select example"
             >
               <option selected value="relu">ReLU</option>
@@ -92,7 +92,12 @@
           </div>
           <div class="col">
             <label class="form-label mt-4">Number of hidden units:</label>
-            <input class="form-control" type="number" id="units" value="1" />
+            <input
+              class="form-control"
+              type="number"
+              id="default-units"
+              value="1"
+            />
           </div>
         </div>
         <div id="layers"></div>
@@ -136,7 +141,7 @@
     <script type="text/javascript">
       var cel_valu = [];
       var far_valu = [];
-      var activation;
+      // var activation;
       //const celsius_values = tf.tensor([-30, 45, 32, 4, 8, 29, 90, 12, 29, -40, 9, 30, 22, -12]);
 
       //const fahrenheit_values = tf.tensor([-22, 113, 89.6, 39.2, 46.4, 84.2, 194, 53.6, 84.2, -40, 48.2, 86, 71.6, 10.4]);
@@ -200,7 +205,7 @@
       });
 
       function addData() {
-        activation = document.getElementById("acti").value;
+        // activation = document.getElementById("acti").value;
         var cel_val = document.getElementById("cdata").value;
         var far_val = document.getElementById("fdata").value;
         alert("data submitted" + cel_val + far_val);
@@ -231,13 +236,36 @@
         document.getElementById("output").innerText =
           "Training Machine Please Wait...";
         const model = tf.sequential({
-          layers: [
-            tf.layers.dense({ inputShape: [1], units: 1 }),
-            tf.layers.dense({ units: 100, activation: activation }),
-            tf.layers.dense({ units: 50, activation: activation }),
-            tf.layers.dense({ units: 1 })
-          ]
+          layers: [tf.layers.dense({ inputShape: [1], units: 1 })]
         });
+        let default_acti = document.getElementById("default-acti");
+        let default_units = document.getElementById("default-units");
+        model.add(
+          tf.layers.dense({
+            units: Number(default_units.value),
+            activation: default_acti.value
+          })
+        );
+        let layers = document.getElementById("layers");
+        let noOfChildren = layers.childElementCount;
+        for (let i = 0; i < noOfChildren; i++) {
+          let this_layer = layers.childNodes[i];
+          let acti_div = this_layer.children[0];
+          let units_div = this_layer.children[1];
+          let activation = acti_div.children[0].value;
+          let units = Number(units_div.children[0].value);
+          model.add(
+            tf.layers.dense({
+              units: units,
+              activation: activation
+            })
+          );
+        }
+        model.add(
+          tf.layers.dense({
+            units: 1
+          })
+        );
 
         model.summary();
 
