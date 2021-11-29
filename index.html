@@ -50,19 +50,21 @@
           value="32.0,23.0,49.0,-40.0,-122.0,-20.7,15.2,100.7,36.42,87.99,-87.0,-111.98,-54.56,75.57"
         />
 
-        <label class="form-label mt-4">Select Activation: </label>
+        <!-- <label class="form-label mt-4">Select Activation: </label>
         <select
           class="form-select"
           id="acti"
           aria-label="Default select example"
         >
-          <!-- <option selected>Select Activation</option> -->
+          
           <option selected value="relu">Relu</option>
           <option value="tanh">Tanh</option>
           <option value="sigmoid">Sigmoid</option>
           <option value="liner">Liner</option>
-        </select>
-        <button class="btn btn-primary mt-4" onclick="addData()">ADD</button>
+        </select> -->
+        <button class="btn btn-primary mt-4" onclick="addData()">
+          Add the data
+        </button>
 
         <div
           class="mt-4 container text-center form-control"
@@ -71,6 +73,40 @@
           <h5 class="mt-4" style="color: #ff0303;">Added Data:</h5>
           <p class="mt-4" style="color: #2dff2d;" id="output1"></p>
           <p class="mt-4" style="color: #2dff2d;" id="output2"></p>
+        </div>
+
+        <!-- Add Layer and activation -->
+        <div class="row">
+          <div class="col">
+            <label class="form-label mt-4">Select Activation: </label>
+            <select
+              class="form-select"
+              id="acti"
+              aria-label="Default select example"
+            >
+              <option selected value="relu">ReLU</option>
+              <option value="tanh">Tanh</option>
+              <option value="sigmoid">Sigmoid</option>
+              <option value="linear">Linear</option>
+            </select>
+          </div>
+          <div class="col">
+            <label class="form-label mt-4">Number of hidden units:</label>
+            <input class="form-control" type="number" id="units" value="1" />
+          </div>
+        </div>
+        <div id="layers"></div>
+        <div class="row">
+          <div class="col">
+            <button class="btn btn-primary mt-4" id="addLayer">
+              Add another layer
+            </button>
+          </div>
+          <div class="col">
+            <button class="btn btn-primary mt-4" id="delLayer">
+              Delete layer
+            </button>
+          </div>
         </div>
 
         <!-- DATA TRAINING FIELD -->
@@ -109,6 +145,59 @@
       // var fahrenheit_values = [];
       //console.log(fahrenheit_values);
       // const layer_1 = tf.layers.dense({inputShape: [1], units: 1})
+      let addBtn = document.getElementById("addLayer");
+      addBtn.addEventListener("click", function () {
+        layers = document.getElementById("layers");
+        let new_layer = document.createElement("div");
+        new_layer.className = "row";
+        let new_acti_div = document.createElement("div");
+        new_acti_div.className = "col";
+        let relu_option = document.createElement("option");
+        relu_option.value = "relu";
+        relu_option.innerHTML = "ReLU";
+        relu_option.setAttribute("selected", true);
+        let tanh_option = document.createElement("option");
+        tanh_option.value = "tanh";
+        tanh_option.innerHTML = "TanH";
+        let sigmoid_option = document.createElement("option");
+        sigmoid_option.value = "sigmoid";
+        sigmoid_option.innerHTML = "Sigmoid";
+        let linear_option = document.createElement("option");
+        linear_option.value = "linear";
+        linear_option.innerHTML = "Linear";
+
+        let select_option = document.createElement("select");
+        select_option.className = "form-select mt-4";
+        select_option.appendChild(relu_option);
+        select_option.appendChild(tanh_option);
+        select_option.appendChild(sigmoid_option);
+        select_option.appendChild(linear_option);
+
+        new_acti_div.appendChild(select_option);
+
+        let new_units_div = document.createElement("div");
+        new_units_div.className = "col";
+
+        let unit_input = document.createElement("input");
+        unit_input.className = "form-control mt-4";
+        unit_input.setAttribute("type", "number");
+        unit_input.setAttribute("value", "1");
+
+        new_units_div.appendChild(unit_input);
+
+        new_layer.appendChild(new_acti_div);
+        new_layer.appendChild(new_units_div);
+
+        layers.appendChild(new_layer);
+      });
+
+      let delBtn = document.getElementById("delLayer");
+      delBtn.addEventListener("click", function () {
+        let layers = document.getElementById("layers");
+        if (layers.lastChild) {
+          layers.removeChild(layers.lastChild);
+        }
+      });
 
       function addData() {
         activation = document.getElementById("acti").value;
